@@ -8,7 +8,9 @@ use App\Http\Controllers\Api\V1\ProductPriceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function () {
-    Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
+    Route::post('auth/login', [AuthController::class, 'login'])
+        ->middleware('throttle:login')
+        ->name('auth.login');
 
     Route::apiResource('products', ProductController::class)->only(['index', 'show']);
     Route::apiResource('products.prices', ProductPriceController::class)->only(['index']);

@@ -85,7 +85,11 @@ un máximo de 2 decimales y sin valores negativos.
 
 ## Seguridad
 
--   Lecturas públicas con rate limiting.
+-   Rate limiting en toda la API: 60 peticiones por minuto por usuario
+    autenticado o por IP. El login tiene un límite más estricto: 5 intentos
+    por minuto por email e IP, y 20 por IP, para frenar ataques de fuerza
+    bruta. Al superarlo se responde `429` con la cabecera `Retry-After`.
+    **Implementada**
 -   Escrituras protegidas con tokens Bearer de Laravel Sanctum
     (`auth:sanctum`) y la ability `products:write`. **Implementada**
 -   Dos roles (`UserRole`): `editor` recibe tokens con `products:write`;
