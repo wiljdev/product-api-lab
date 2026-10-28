@@ -145,6 +145,8 @@ Los tests usan SQLite en memoria, así que no tocan la base de datos de desarrol
 -   Modelos, relaciones, restricciones de base de datos y seeders.
 -   Que la especificación OpenAPI y la colección de Postman cubren todas las rutas de la API.
 
+Cada push y pull request a `main` ejecuta en GitHub Actions ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) la comprobación de estilo con Laravel Pint y la suite completa en PHP 8.3 y 8.4.
+
 ## Decisiones técnicas
 
 El detalle está en [`docs/decisiones.md`](docs/decisiones.md). En resumen:
