@@ -12,6 +12,16 @@ API REST en Laravel para gestionar productos, divisas y precios de productos en 
 -   Suite de tests automatizados (PHPUnit) y CI con GitHub Actions.
 -   Frontend Vue 3 independiente con catálogo, detalle de precios y un playground para probar la API.
 
+## Demo en línea
+
+| Qué | URL |
+| --- | --- |
+| Frontend (catálogo y playground) | https://productos.ingeniapp.cloud |
+| API | https://api-productos.ingeniapp.cloud/api/v1 |
+| Documentación Swagger | https://api-productos.ingeniapp.cloud/docs |
+
+Los datos son ficticios. Las credenciales de los usuarios demo se entregan junto con la prueba; la guía de despliegue está en [`docs/deploy.md`](docs/deploy.md). Si el servidor de demostración deja de estar disponible, el proyecto se puede levantar en local siguiendo la sección de instalación.
+
 ## Stack
 
 | Componente | Versión |

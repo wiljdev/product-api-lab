@@ -48,18 +48,24 @@ En el sitio: **SSL/TLS → Actions → New Let's Encrypt Certificate**. Requiere
 
 ### 2.4 Código
 
-Conéctate por SSH con el usuario del sitio:
+El servidor solo acepta claves SSH, no contraseñas. Como root (por ejemplo desde la terminal web del proveedor del VPS), autoriza tu clave pública para el usuario del sitio:
 
 ```bash
-ssh ingeniapp-api-productos@<IP del VPS>
+U=ingeniapp-api-productos
+mkdir -p /home/$U/.ssh
+echo '<tu clave pública ssh-ed25519 ...>' >> /home/$U/.ssh/authorized_keys
+chown -R $U:$U /home/$U/.ssh
+chmod 700 /home/$U/.ssh
+chmod 600 /home/$U/.ssh/authorized_keys
 ```
 
-Si el repositorio es privado, crea una clave de despliegue y añade la clave pública en GitHub, en **Settings → Deploy keys** (solo lectura):
+Usa el propio usuario del sitio y no uno añadido en la pestaña SSH/FTP: así los archivos tienen el mismo dueño que PHP-FPM y Laravel puede escribir en `storage/`. Después conéctate desde tu equipo:
 
 ```bash
-ssh-keygen -t ed25519 -C "deploy@api-productos" -f ~/.ssh/id_ed25519 -N ""
-cat ~/.ssh/id_ed25519.pub
+ssh -i ~/.ssh/<tu clave privada> ingeniapp-api-productos@<IP del VPS>
 ```
+
+El repositorio es público, así que se clona por HTTPS sin claves de despliegue.
 
 Clona el repositorio en la carpeta del sitio. CloudPanel la crea al dar de alta el sitio; revisa su contenido antes de vaciarla:
 
@@ -130,29 +136,31 @@ curl -s https://api-productos.ingeniapp.cloud/api/v1/currencies
 
 ### 3.1 Crear el sitio
 
-En CloudPanel: **Add Site → Create a Static HTML Site**, con dominio `productos.ingeniapp.cloud` y su propio usuario (por ejemplo `ingeniapp-productos`). Emite también su certificado en **SSL/TLS**.
+En CloudPanel: **Add Site → Create a Static HTML Site**, con dominio `productos.ingeniapp.cloud` y su propio usuario (por ejemplo `ingeniapp-productos`). Emite también su certificado en **SSL/TLS** y autoriza tu clave SSH para ese usuario igual que en el paso 2.4.
 
 ### 3.2 Rutas de Vue
 
-El frontend usa rutas como `/products/1` o `/playground`, que no existen como archivos. En el sitio, **Vhost**, dentro del bloque `server` que escucha en el puerto 443, deja así el `location /`:
+El frontend usa rutas como `/products/1` o `/playground`, que no existen como archivos. La plantilla estática de CloudPanel no trae un bloque `location /`; en el sitio, **Vhost**, añádelo justo debajo de `index index.html;`:
 
 ```nginx
-location / {
+  index index.html;
+
+  location / {
     try_files $uri $uri/ /index.html;
-}
+  }
 ```
+
+Nginx sirve el archivo si existe y, si no, `index.html`, para que Vue Router muestre la página. Los assets llevan un hash en el nombre, así que la caché larga que ya define la plantilla para `css` y `js` es correcta.
 
 Guarda los cambios; CloudPanel valida y recarga Nginx.
 
 ### 3.3 Compilar y subir
 
-En tu equipo, desde la raíz del proyecto (Git Bash):
+En tu equipo, desde la carpeta `frontend` (Git Bash):
 
 ```bash
-cd frontend
 npm ci
 VITE_API_URL=https://api-productos.ingeniapp.cloud/api/v1 VITE_REPOSITORY_URL=https://github.com/wiljdev/product-api-lab npm run build
-scp -r dist/* ingeniapp-productos@<IP del VPS>:htdocs/productos.ingeniapp.cloud/
 ```
 
 En PowerShell las variables se definen antes del build:
@@ -162,6 +170,16 @@ $env:VITE_API_URL = "https://api-productos.ingeniapp.cloud/api/v1"
 $env:VITE_REPOSITORY_URL = "https://github.com/wiljdev/product-api-lab"
 npm run build
 ```
+
+Sube el resultado. Primero se borran los assets anteriores, que tienen otros nombres y quedarían huérfanos:
+
+```bash
+cd dist
+ssh -i ~/.ssh/<tu clave privada> ingeniapp-productos@<IP del VPS> "rm -rf htdocs/productos.ingeniapp.cloud/assets"
+scp -i ~/.ssh/<tu clave privada> -r index.html assets ingeniapp-productos@<IP del VPS>:htdocs/productos.ingeniapp.cloud/
+```
+
+En CMD de Windows la ruta de la clave se escribe `%USERPROFILE%\.ssh\<clave>` y en PowerShell `$env:USERPROFILE\.ssh\<clave>`.
 
 ## 4. Verificación
 
