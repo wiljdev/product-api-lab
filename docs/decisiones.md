@@ -32,7 +32,7 @@ actualizan a **Implementada** cuando el código y sus tests las respaldan.
 | -------------------- | ------------- | --------------------------- |
 | `id`                 | bigint, PK    |                             |
 | `name`               | varchar       | Obligatorio                 |
-| `description`        | text          | Opcional                    |
+| `description`        | text          | Obligatoria                 |
 | `price`              | decimal(12,2) | Precio en la divisa base    |
 | `currency_id`        | FK            | Divisa base                 |
 | `tax_cost`           | decimal(12,2) | Costo de impuestos          |
@@ -54,8 +54,8 @@ actualizan a **Implementada** cuando el código y sus tests las respaldan.
     `(product_id, currency_id)`. **Propuesta**
 -   Al eliminar un producto se eliminan sus precios (`cascadeOnDelete`).
     **Propuesta**
--   No se puede eliminar una divisa en uso (`restrictOnDelete`).
-    **Propuesta**
+-   No se puede eliminar una divisa usada como base de un producto
+    (`restrictOnDelete`). **Implementada**
 
 ## Convención de `exchange_rate`
 

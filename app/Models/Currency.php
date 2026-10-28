@@ -6,6 +6,7 @@ use Database\Factories\CurrencyFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * A currency identified by its ISO 4217 code.
@@ -28,5 +29,15 @@ class Currency extends Model
         return [
             'exchange_rate' => 'decimal:6',
         ];
+    }
+
+    /**
+     * Get the products that use this currency as their base currency.
+     *
+     * @return HasMany<Product, $this>
+     */
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
     }
 }
