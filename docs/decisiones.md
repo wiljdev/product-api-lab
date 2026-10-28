@@ -15,6 +15,17 @@ actualizan a **Implementada** cuando el código y sus tests las respaldan.
     como `/products`; el prefijo permite evolucionar la API sin romper
     clientes existentes.
 
+## Documentación de la API
+
+-   Especificación OpenAPI 3.1 escrita a mano en `docs/openapi.yaml`, sin
+    dependencias extra. Es la única fuente: el repositorio la versiona y la
+    aplicación la sirve en `/docs/openapi.yaml`.
+-   Swagger UI en `/docs` (la raíz `/` redirige ahí), cargado desde
+    jsDelivr con versión fija y hash SRI.
+-   `DocumentationTest` falla si una ruta de `/api/v1` no está documentada,
+    si se documenta una operación que no existe o si una referencia `$ref`
+    está rota.
+
 ## Modelo de datos
 
 ### `currencies`
