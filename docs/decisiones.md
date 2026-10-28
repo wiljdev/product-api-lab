@@ -75,14 +75,17 @@ registros.
 
 ## Representación de importes
 
-**Pendiente:** decidir si los importes se devuelven como string (`"19.99"`,
-comportamiento por defecto del cast `decimal:2`) o como número.
+**Confirmada:** los importes se devuelven como string con decimales fijos
+(`"19.99"`, `"4150.000000"`). Así no se pierde precisión por la coma
+flotante de JSON. En las peticiones se aceptan como número o string, con
+un máximo de 2 decimales y sin valores negativos.
 
 ## Seguridad
 
 -   Lecturas públicas con rate limiting.
--   Escrituras protegidas con tokens Bearer de Laravel Sanctum y la
-    ability `products:write`. **Propuesta**
+-   Escrituras protegidas con tokens Bearer de Laravel Sanctum
+    (`auth:sanctum`). **Implementada**. Falta restringirlas a la ability
+    `products:write`. **Propuesta**
 -   Emisión y revocación de tokens mediante `POST /api/v1/auth/login` y
     `POST /api/v1/auth/logout`. **Propuesta**
 -   Errores en JSON con códigos `401`, `403`, `404`, `422`, `429` y `500`,
@@ -98,4 +101,4 @@ comportamiento por defecto del cast `decimal:2`) o como número.
 | MySQL en desarrollo, SQLite en tests | Confirmada |
 | Sanctum con abilities              | Propuesta  |
 | Convención de `exchange_rate`      | Confirmada |
-| Representación de importes         | Pendiente  |
+| Representación de importes         | Confirmada |
