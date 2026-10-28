@@ -22,9 +22,9 @@ actualizan a **Implementada** cuando el código y sus tests las respaldan.
 | Campo           | Tipo           | Notas                                         |
 | --------------- | -------------- | --------------------------------------------- |
 | `id`            | bigint, PK     |                                               |
-| `name`          | varchar        | Código de la divisa (p. ej. `USD`), único     |
-| `symbol`        | varchar        | Símbolo (p. ej. `$`)                          |
-| `exchange_rate` | decimal        | Ver [convención](#convención-de-exchange_rate) |
+| `name`          | varchar(3)     | Código ISO 4217 (p. ej. `USD`), único         |
+| `symbol`        | varchar(10)    | Símbolo (p. ej. `$`)                          |
+| `exchange_rate` | decimal(18,6)  | Ver [convención](#convención-de-exchange_rate) |
 
 ### `products`
 
@@ -59,7 +59,7 @@ actualizan a **Implementada** cuando el código y sus tests las respaldan.
 
 ## Convención de `exchange_rate`
 
-**Propuesta:** `exchange_rate` indica cuántas unidades de la divisa
+**Confirmada:** `exchange_rate` indica cuántas unidades de la divisa
 equivalen a 1 USD (USD = 1). El precio en `product_prices` siempre se
 registra de forma explícita; la API no convierte precios
 automáticamente.
@@ -88,5 +88,5 @@ comportamiento por defecto del cast `decimal:2`) o como número.
 | PHPUnit para los tests             | Confirmada |
 | MySQL en desarrollo, SQLite en tests | Confirmada |
 | Sanctum con abilities              | Propuesta  |
-| Convención de `exchange_rate`      | Propuesta  |
+| Convención de `exchange_rate`      | Confirmada |
 | Representación de importes         | Pendiente  |
