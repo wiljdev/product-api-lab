@@ -91,8 +91,12 @@ un máximo de 2 decimales y sin valores negativos.
     `products:write`. **Propuesta**
 -   Emisión y revocación de tokens mediante `POST /api/v1/auth/login` y
     `POST /api/v1/auth/logout`. **Propuesta**
--   Errores en JSON con códigos `401`, `403`, `404`, `422`, `429` y `500`,
-    sin exponer trazas.
+-   Todas las rutas `/api` responden JSON aunque el cliente no envíe
+    `Accept: application/json` (middleware `ForceJsonResponse`).
+    **Implementada**
+-   Errores en JSON con la forma `{"message": "..."}` (y `errors` en los
+    `422`). Los `404` no exponen nombres de clases internas. Las trazas
+    solo aparecen en local con `APP_DEBUG=true`. **Implementada**
 
 ## Registro de decisiones
 
