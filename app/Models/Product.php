@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * A product priced in its base currency.
@@ -39,5 +40,15 @@ class Product extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    /**
+     * Get the prices of the product in other currencies.
+     *
+     * @return HasMany<ProductPrice, $this>
+     */
+    public function prices(): HasMany
+    {
+        return $this->hasMany(ProductPrice::class);
     }
 }

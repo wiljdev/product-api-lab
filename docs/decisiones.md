@@ -51,11 +51,11 @@ actualizan a **Implementada** cuando el código y sus tests las respaldan.
 
 -   Importes con `DECIMAL`, nunca `FLOAT`. No se aceptan valores negativos.
 -   Un único precio por producto y divisa: índice único
-    `(product_id, currency_id)`. **Propuesta**
+    `(product_id, currency_id)`. **Implementada**
 -   Al eliminar un producto se eliminan sus precios (`cascadeOnDelete`).
-    **Propuesta**
--   No se puede eliminar una divisa usada como base de un producto
-    (`restrictOnDelete`). **Implementada**
+    **Implementada**
+-   No se puede eliminar una divisa usada como base de un producto o en
+    un precio (`restrictOnDelete`). **Implementada**
 
 ## Convención de `exchange_rate`
 

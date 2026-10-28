@@ -40,4 +40,14 @@ class Currency extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    /**
+     * Get the product prices expressed in this currency.
+     *
+     * @return HasMany<ProductPrice, $this>
+     */
+    public function productPrices(): HasMany
+    {
+        return $this->hasMany(ProductPrice::class);
+    }
 }
