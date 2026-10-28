@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\CurrencyController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\ProductPriceController;
 use Illuminate\Http\Request;
@@ -8,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::apiResource('products', ProductController::class)->only(['index', 'show']);
     Route::apiResource('products.prices', ProductPriceController::class)->only(['index']);
+    Route::apiResource('currencies', CurrencyController::class)->only(['index']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
