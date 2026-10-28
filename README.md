@@ -125,6 +125,19 @@ Ejemplo de producto:
 
 Los errores siempre son JSON con la forma `{"message": "..."}`, aunque el cliente no envíe `Accept: application/json`.
 
+## Frontend
+
+La carpeta [`frontend/`](frontend) contiene una aplicación Vue 3 + Vite independiente que consume la API solo por HTTP. Con la API levantada:
+
+```bash
+cd frontend
+cp .env.example .env
+npm install
+npm run dev
+```
+
+Queda en `http://localhost:5173`. `VITE_API_URL` en `frontend/.env` indica la URL de la API (por defecto `http://127.0.0.1:8000/api/v1`). Los tests del frontend se ejecutan con `npm test` y el build de producción con `npm run build`.
+
 ## Documentación
 
 -   **Swagger UI:** `/docs`. Permite autorizar con el token y probar cada endpoint desde el navegador.
@@ -145,7 +158,7 @@ Los tests usan SQLite en memoria, así que no tocan la base de datos de desarrol
 -   Modelos, relaciones, restricciones de base de datos y seeders.
 -   Que la especificación OpenAPI y la colección de Postman cubren todas las rutas de la API.
 
-Cada push y pull request a `main` ejecuta en GitHub Actions ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) la comprobación de estilo con Laravel Pint y la suite completa en PHP 8.3 y 8.4.
+Cada push y pull request a `main` ejecuta en GitHub Actions ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) la comprobación de estilo con Laravel Pint y la suite completa en PHP 8.3 y 8.4, además de los tests y el build del frontend.
 
 ## Decisiones técnicas
 
