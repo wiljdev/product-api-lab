@@ -64,6 +64,15 @@ equivalen a 1 USD (USD = 1). El precio en `product_prices` siempre se
 registra de forma explícita; la API no convierte precios
 automáticamente.
 
+## Datos de demostración
+
+`php artisan migrate:fresh --seed` crea 6 divisas (USD, EUR, GBP, MXN, COP
+y PEN) con tasas aproximadas, 8 productos y un precio por cada divisa
+distinta de la base de cada producto (40 precios). Los precios demo se
+calculan con las tasas en el seeder; la API los trata como valores
+explícitos. Los seeders se pueden ejecutar varias veces sin duplicar
+registros.
+
 ## Representación de importes
 
 **Pendiente:** decidir si los importes se devuelven como string (`"19.99"`,
