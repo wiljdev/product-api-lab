@@ -136,7 +136,7 @@ npm install
 npm run dev
 ```
 
-Queda en `http://localhost:5173`. `VITE_API_URL` en `frontend/.env` indica la URL de la API (por defecto `http://127.0.0.1:8000/api/v1`). Los tests del frontend se ejecutan con `npm test` y el build de producción con `npm run build`.
+Queda en `http://localhost:5173`. `VITE_API_URL` en `frontend/.env` indica la URL de la API (por defecto `http://127.0.0.1:8000/api/v1`). La API solo acepta peticiones de navegador desde los orígenes de `CORS_ALLOWED_ORIGINS` en el `.env` de Laravel; por defecto, `http://localhost:5173` y `http://127.0.0.1:5173`. Los tests del frontend se ejecutan con `npm test` y el build de producción con `npm run build`.
 
 ## Documentación
 

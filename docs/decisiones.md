@@ -126,6 +126,10 @@ un máximo de 2 decimales y sin valores negativos.
 -   Dos usuarios demo configurables en `config/demo.php`: el editor
     (`DEMO_USER_*`) y el viewer (`DEMO_VIEWER_*`), para probar el `403`.
     Fuera de local se deben usar contraseñas robustas. **Implementada**
+-   CORS limitado a los orígenes del frontend definidos en
+    `CORS_ALLOWED_ORIGINS`, sin comodines ni credenciales (la API usa tokens
+    Bearer, no cookies). Solo se permiten los métodos y cabeceras que usa la
+    API, y se exponen las cabeceras de rate limiting. **Implementada**
 -   Todas las rutas `/api` responden JSON aunque el cliente no envíe
     `Accept: application/json` (middleware `ForceJsonResponse`).
     **Implementada**
