@@ -18,6 +18,12 @@ const router = createRouter({
       props: true,
       meta: { title: 'Producto' },
     },
+    {
+      path: '/playground',
+      name: 'playground',
+      component: () => import('../views/PlaygroundView.vue'),
+      meta: { title: 'Playground' },
+    },
     { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
   ],
   scrollBehavior: () => ({ top: 0 }),

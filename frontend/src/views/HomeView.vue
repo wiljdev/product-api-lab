@@ -37,6 +37,7 @@ const features = [
 
     <div class="actions">
       <RouterLink :to="{ name: 'products' }" class="button button-primary">Ver catálogo</RouterLink>
+      <RouterLink :to="{ name: 'playground' }" class="button">Probar la API</RouterLink>
       <a :href="api.docsUrl" class="button" target="_blank" rel="noopener">Documentación de la API</a>
       <a v-if="repositoryUrl" :href="repositoryUrl" class="button" target="_blank" rel="noopener">Repositorio</a>
     </div>
