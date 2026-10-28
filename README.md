@@ -1,58 +1,184 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Product API Lab
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST en Laravel para gestionar productos, divisas y precios de productos en distintas divisas.
 
-## About Laravel
+-   CRUD de productos con su divisa base, costo de impuestos y costo de fabricación.
+-   Registro y consulta de precios de un producto en otras divisas.
+-   Lecturas públicas y escrituras protegidas con tokens Bearer de Laravel Sanctum y roles.
+-   Respuestas JSON consistentes, validación con Form Requests, API Resources y rate limiting.
+-   Documentación OpenAPI con Swagger UI y colección de Postman.
+-   Suite de tests automatizados (PHPUnit).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Componente | Versión |
+| --- | --- |
+| PHP | 8.3 o superior |
+| Laravel | 13 |
+| Base de datos | MySQL 8 (desarrollo) y SQLite en memoria (tests) |
+| Autenticación | Laravel Sanctum 4 |
+| Tests | PHPUnit 12 |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Instalación local
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Requisitos: PHP 8.3+ con `pdo_mysql` y `pdo_sqlite`, Composer y MySQL 8. Con [Laragon](https://laragon.org/) ya está todo incluido.
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <url-del-repositorio> product-api-lab
+cd product-api-lab
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Crea la base de datos y ajusta las variables `DB_*` de `.env` si tus credenciales son distintas:
 
-## Contributing
+```sql
+CREATE DATABASE product_api_lab CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Ejecuta las migraciones con los datos de demostración y levanta el servidor:
 
-## Code of Conduct
+```bash
+php artisan migrate --seed
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+La API queda en `http://127.0.0.1:8000/api/v1` y la documentación en `http://127.0.0.1:8000/docs`. Con Laragon también está disponible en `http://product-api-lab.test`.
 
-## Security Vulnerabilities
+Para volver a los datos iniciales en cualquier momento:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan migrate:fresh --seed
+```
 
-## License
+### Datos de demostración
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+El seeder crea 6 divisas (USD, EUR, GBP, MXN, COP y PEN), 8 productos con sus precios en las demás divisas y dos usuarios:
+
+| Usuario | Rol | Puede escribir |
+| --- | --- | --- |
+| `demo@example.com` | `editor` | Sí |
+| `viewer@example.com` | `viewer` | No, sus escrituras devuelven `403` |
+
+En local la contraseña de ambos es el valor por defecto de `config/demo.php`. Se cambia con `DEMO_USER_PASSWORD` y `DEMO_VIEWER_PASSWORD` en `.env`; fuera de local deben ser contraseñas robustas.
+
+## Uso
+
+### Obtener un token
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "demo@example.com", "password": "<contraseña>", "device_name": "curl"}'
+```
+
+La respuesta incluye `data.token`. Envíalo en la cabecera `Authorization: Bearer <token>` en las peticiones de escritura. Los tokens caducan a las 24 horas (`SANCTUM_EXPIRATION`) y `POST /auth/logout` revoca el token actual.
+
+### Endpoints
+
+Todas las rutas tienen el prefijo `/api/v1`.
+
+| Método | Ruta | Acceso | Descripción |
+| --- | --- | --- | --- |
+| `POST` | `/auth/login` | Público | Obtener un token |
+| `POST` | `/auth/logout` | Token | Revocar el token actual |
+| `GET` | `/auth/me` | Token | Usuario dueño del token |
+| `GET` | `/products` | Público | Listar productos (paginado, `per_page` de 1 a 100) |
+| `POST` | `/products` | Editor | Crear un producto |
+| `GET` | `/products/{id}` | Público | Consultar un producto |
+| `PUT` / `PATCH` | `/products/{id}` | Editor | Reemplazar o actualizar un producto |
+| `DELETE` | `/products/{id}` | Editor | Eliminar un producto y sus precios |
+| `GET` | `/products/{id}/prices` | Público | Listar los precios de un producto |
+| `POST` | `/products/{id}/prices` | Editor | Registrar un precio en otra divisa |
+| `GET` | `/currencies` | Público | Listar divisas |
+
+Ejemplo de producto:
+
+```json
+{
+    "data": {
+        "id": 1,
+        "name": "Teclado mecánico TKL",
+        "description": "Teclado mecánico sin pad numérico con switches táctiles y retroiluminación RGB.",
+        "price": "89.90",
+        "currency_id": 1,
+        "currency": { "id": 1, "name": "USD", "symbol": "$", "exchange_rate": "1.000000" },
+        "tax_cost": "17.08",
+        "manufacturing_cost": "32.50",
+        "created_at": "2026-10-28T21:07:39.000000Z",
+        "updated_at": "2026-10-28T21:07:39.000000Z"
+    }
+}
+```
+
+### Códigos de respuesta
+
+| Código | Cuándo |
+| --- | --- |
+| `200` / `201` / `204` | Consulta o actualización, creación y eliminación o logout |
+| `401` | Falta el token, o es inválido, ha caducado o fue revocado |
+| `403` | El token no tiene permiso de escritura (rol `viewer`) |
+| `404` | El recurso no existe |
+| `422` | Validación fallida, con los errores agrupados por campo |
+| `429` | Límite de peticiones superado (incluye `Retry-After`) |
+
+Los errores siempre son JSON con la forma `{"message": "..."}`, aunque el cliente no envíe `Accept: application/json`.
+
+## Documentación
+
+-   **Swagger UI:** `/docs`. Permite autorizar con el token y probar cada endpoint desde el navegador.
+-   **OpenAPI 3.1:** [`docs/openapi.yaml`](docs/openapi.yaml), también servido en `/docs/openapi.yaml`.
+-   **Postman:** [`docs/postman_collection.json`](docs/postman_collection.json). Importa la colección, ajusta la variable `baseUrl` y las contraseñas, y ejecútala completa con el Collection Runner: inicia sesión, crea y actualiza un producto y su precio, muestra los errores `401`, `403`, `404` y `422`, y al final borra lo creado y revoca los tokens.
+-   **Decisiones técnicas:** [`docs/decisiones.md`](docs/decisiones.md).
+
+## Tests
+
+```bash
+php artisan test
+```
+
+Los tests usan SQLite en memoria, así que no tocan la base de datos de desarrollo. Cubren:
+
+-   Endpoints de productos, precios, divisas y autenticación, incluidas las validaciones.
+-   Seguridad: `401` sin token o con token inválido, caducado o revocado; `403` con el rol `viewer`; rate limiting.
+-   Modelos, relaciones, restricciones de base de datos y seeders.
+-   Que la especificación OpenAPI y la colección de Postman cubren todas las rutas de la API.
+
+## Decisiones técnicas
+
+El detalle está en [`docs/decisiones.md`](docs/decisiones.md). En resumen:
+
+-   **Importes:** columnas `DECIMAL` (nunca `FLOAT`) y valores devueltos como string (`"89.90"`) para no perder precisión.
+-   **Divisas:** `name` es el código ISO 4217 y `exchange_rate` es la cantidad de esa divisa equivalente a 1 USD.
+-   **Precios:** un único precio por producto y divisa, y nunca en la divisa base, porque ese precio es el campo `price` del producto. La API no convierte precios automáticamente.
+-   **Integridad:** al borrar un producto se borran sus precios; no se puede borrar una divisa en uso.
+-   **Autorización:** el rol del usuario define las abilities del token; los usuarios nuevos son `viewer` por defecto.
+-   **Versionado:** rutas bajo `/api/v1` para poder evolucionar la API sin romper clientes.
+
+## Estructura
+
+```text
+app/
+├── Enums/                      # UserRole y TokenAbility
+├── Http/
+│   ├── Controllers/Api/V1/     # Auth, Product, ProductPrice y Currency
+│   ├── Middleware/             # ForceJsonResponse
+│   ├── Requests/               # Validación
+│   └── Resources/              # Representación JSON
+└── Models/                     # Currency, Product, ProductPrice y User
+database/
+├── factories/
+├── migrations/
+└── seeders/                    # Divisas, productos, precios y usuarios demo
+docs/                           # OpenAPI, Postman y decisiones técnicas
+routes/api.php                  # Rutas de la API
+tests/Feature/                  # Tests de la API, modelos, seeders y documentación
+```
+
+## Limitaciones conocidas
+
+-   Sin historial de precios: cada producto guarda un único precio vigente por divisa.
+-   Sin conversión automática de divisas; `exchange_rate` es informativo.
+-   Las divisas solo se consultan por la API; se gestionan con los seeders.
+-   No hay endpoints de registro ni de gestión de usuarios; los usuarios demo se crean con el seeder.
