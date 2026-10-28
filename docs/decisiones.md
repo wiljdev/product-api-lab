@@ -25,6 +25,14 @@ actualizan a **Implementada** cuando el código y sus tests las respaldan.
 -   `DocumentationTest` falla si una ruta de `/api/v1` no está documentada,
     si se documenta una operación que no existe o si una referencia `$ref`
     está rota.
+-   Colección de Postman v2.1 en `docs/postman_collection.json`. Ejecutada
+    en orden (Collection Runner) inicia sesión como editor y viewer, crea y
+    actualiza un producto y su precio, muestra los errores `401`, `403`,
+    `404` y `422`, y al final borra lo creado y revoca los tokens. Cada
+    petición comprueba su código de estado, y los ejemplos de respuesta son
+    respuestas reales con el token enmascarado.
+-   `PostmanCollectionTest` falla si una ruta no tiene petición en la
+    colección o si se cuela un token real.
 
 ## Modelo de datos
 
