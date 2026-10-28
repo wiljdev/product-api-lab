@@ -5,15 +5,33 @@ namespace Tests\Feature\Seeders;
 use App\Models\Currency;
 use App\Models\Product;
 use App\Models\ProductPrice;
+use App\Models\User;
 use Database\Seeders\CurrencySeeder;
 use Database\Seeders\DatabaseSeeder;
+use Database\Seeders\DemoUserSeeder;
 use Database\Seeders\ProductSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class DatabaseSeederTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_it_seeds_the_configured_demo_user(): void
+    {
+        config([
+            'demo.user.email' => 'evaluator@example.com',
+            'demo.user.password' => 'secret-demo-password',
+        ]);
+
+        $this->seed(DemoUserSeeder::class);
+        $this->seed(DemoUserSeeder::class);
+
+        $user = User::sole();
+        $this->assertSame('evaluator@example.com', $user->email);
+        $this->assertTrue(Hash::check('secret-demo-password', $user->password));
+    }
 
     public function test_it_seeds_demo_currencies_products_and_prices(): void
     {

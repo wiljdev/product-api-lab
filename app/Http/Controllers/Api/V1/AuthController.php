@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Resources\UserResource;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
+class AuthController extends Controller
+{
+    /**
+     * Issue a Bearer token for valid credentials.
+     *
+     * Wrong email and wrong password return the same error so the endpoint
+     * cannot be used to discover registered emails.
+     *
+     * @throws ValidationException
+     */
+    public function login(LoginRequest $request): JsonResponse
+    {
+        $user = User::firstWhere('email', $request->validated('email'));
+
+        if (! $user || ! Hash::check($request->validated('password'), $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
+
+        $token = $user->createToken(
+            $request->validated('device_name', 'api'),
+            ['*'],
+            now()->addMinutes(config('sanctum.expiration')),
+        );
+
+        return response()->json([
+            'data' => [
+                'token' => $token->plainTextToken,
+                'token_type' => 'Bearer',
+                'expires_at' => $token->accessToken->expires_at,
+                'user' => new UserResource($user),
+            ],
+        ]);
+    }
+
+    /**
+     * Revoke the token used in the current request.
+     */
+    public function logout(Request $request): Response
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->noContent();
+    }
+
+    /**
+     * Display the user that owns the current token.
+     */
+    public function me(Request $request): UserResource
+    {
+        return new UserResource($request->user());
+    }
+}

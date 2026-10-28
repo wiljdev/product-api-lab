@@ -90,7 +90,16 @@ un máximo de 2 decimales y sin valores negativos.
     (`auth:sanctum`). **Implementada**. Falta restringirlas a la ability
     `products:write`. **Propuesta**
 -   Emisión y revocación de tokens mediante `POST /api/v1/auth/login` y
-    `POST /api/v1/auth/logout`. **Propuesta**
+    `POST /api/v1/auth/logout`; `GET /api/v1/auth/me` devuelve el dueño
+    del token. Logout revoca solo el token usado. **Implementada**
+-   Los tokens caducan a los `SANCTUM_EXPIRATION` minutos (24 horas por
+    defecto). **Implementada**
+-   El login responde el mismo error para email desconocido y contraseña
+    incorrecta, para no revelar qué emails están registrados.
+    **Implementada**
+-   El usuario demo se configura con `DEMO_USER_EMAIL` y
+    `DEMO_USER_PASSWORD` (`config/demo.php`); fuera de local se debe usar
+    una contraseña robusta. **Implementada**
 -   Todas las rutas `/api` responden JSON aunque el cliente no envíe
     `Accept: application/json` (middleware `ForceJsonResponse`).
     **Implementada**
