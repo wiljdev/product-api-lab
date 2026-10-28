@@ -5,6 +5,19 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', name: 'home', component: HomeView, meta: { title: 'Inicio' } },
+    {
+      path: '/products',
+      name: 'products',
+      component: () => import('../views/ProductsView.vue'),
+      meta: { title: 'Catálogo' },
+    },
+    {
+      path: '/products/:id(\\d+)',
+      name: 'product',
+      component: () => import('../views/ProductDetailView.vue'),
+      props: true,
+      meta: { title: 'Producto' },
+    },
     { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
   ],
   scrollBehavior: () => ({ top: 0 }),

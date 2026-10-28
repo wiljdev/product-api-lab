@@ -12,6 +12,7 @@ import { api } from './services/api'
 
       <nav class="site-nav" aria-label="Principal">
         <RouterLink to="/">Inicio</RouterLink>
+        <RouterLink :to="{ name: 'products' }">Catálogo</RouterLink>
         <a :href="api.docsUrl" target="_blank" rel="noopener">Docs API</a>
       </nav>
     </div>
