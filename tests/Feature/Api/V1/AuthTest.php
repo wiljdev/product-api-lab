@@ -13,7 +13,7 @@ class AuthTest extends TestCase
 
     public function test_user_can_log_in_and_receive_a_bearer_token(): void
     {
-        $user = User::factory()->create(['email' => 'evaluator@example.com']);
+        $user = User::factory()->editor()->create(['email' => 'evaluator@example.com']);
 
         $response = $this->postJson(route('api.v1.auth.login'), [
             'email' => 'evaluator@example.com',
@@ -23,13 +23,29 @@ class AuthTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('data.token_type', 'Bearer')
+            ->assertJsonPath('data.abilities', ['products:write'])
             ->assertJsonPath('data.user.id', $user->id)
+            ->assertJsonPath('data.user.role', 'editor')
             ->assertJsonMissingPath('data.user.password')
-            ->assertJsonStructure(['data' => ['token', 'token_type', 'expires_at', 'user' => ['id', 'name', 'email']]]);
+            ->assertJsonStructure(['data' => ['token', 'token_type', 'abilities', 'expires_at', 'user' => ['id', 'name', 'email', 'role']]]);
         $this->assertDatabaseHas('personal_access_tokens', [
             'tokenable_id' => $user->id,
             'name' => 'postman',
         ]);
+    }
+
+    public function test_viewer_receives_a_token_without_write_abilities(): void
+    {
+        User::factory()->create(['email' => 'viewer@example.com']);
+
+        $response = $this->postJson(route('api.v1.auth.login'), [
+            'email' => 'viewer@example.com',
+            'password' => 'password',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.abilities', [])
+            ->assertJsonPath('data.user.role', 'viewer');
     }
 
     public function test_issued_token_expires_after_the_configured_minutes(): void

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\Currency;
 use App\Models\Product;
 use App\Models\ProductPrice;
@@ -18,19 +19,27 @@ class DatabaseSeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_seeds_the_configured_demo_user(): void
+    public function test_it_seeds_the_configured_demo_users_with_their_roles(): void
     {
         config([
-            'demo.user.email' => 'evaluator@example.com',
-            'demo.user.password' => 'secret-demo-password',
+            'demo.user.email' => 'editor@example.com',
+            'demo.user.password' => 'secret-editor-password',
+            'demo.viewer.email' => 'viewer@example.com',
+            'demo.viewer.password' => 'secret-viewer-password',
         ]);
 
         $this->seed(DemoUserSeeder::class);
         $this->seed(DemoUserSeeder::class);
 
-        $user = User::sole();
-        $this->assertSame('evaluator@example.com', $user->email);
-        $this->assertTrue(Hash::check('secret-demo-password', $user->password));
+        $this->assertDatabaseCount(User::class, 2);
+
+        $editor = User::firstWhere('email', 'editor@example.com');
+        $this->assertSame(UserRole::Editor, $editor->role);
+        $this->assertTrue(Hash::check('secret-editor-password', $editor->password));
+
+        $viewer = User::firstWhere('email', 'viewer@example.com');
+        $this->assertSame(UserRole::Viewer, $viewer->role);
+        $this->assertTrue(Hash::check('secret-viewer-password', $viewer->password));
     }
 
     public function test_it_seeds_demo_currencies_products_and_prices(): void

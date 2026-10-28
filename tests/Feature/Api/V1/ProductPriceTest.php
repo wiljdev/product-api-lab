@@ -5,9 +5,7 @@ namespace Tests\Feature\Api\V1;
 use App\Models\Currency;
 use App\Models\Product;
 use App\Models\ProductPrice;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -51,7 +49,7 @@ class ProductPriceTest extends TestCase
 
     public function test_authenticated_user_can_create_a_price(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $product = Product::factory()->create();
         $currency = Currency::factory()->create();
 
@@ -84,7 +82,7 @@ class ProductPriceTest extends TestCase
 
     public function test_creating_a_price_for_a_missing_product_returns_not_found(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
 
         $this->postJson(route('api.v1.products.prices.store', 999), [
             'currency_id' => Currency::factory()->create()->id,
@@ -94,7 +92,7 @@ class ProductPriceTest extends TestCase
 
     public function test_price_cannot_use_the_product_base_currency(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $product = Product::factory()->create();
 
         $this->postJson(route('api.v1.products.prices.store', $product), [
@@ -105,7 +103,7 @@ class ProductPriceTest extends TestCase
 
     public function test_product_cannot_have_two_prices_in_the_same_currency(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $productPrice = ProductPrice::factory()->create();
 
         $this->postJson(route('api.v1.products.prices.store', $productPrice->product_id), [
@@ -118,7 +116,7 @@ class ProductPriceTest extends TestCase
 
     public function test_same_currency_can_be_used_by_different_products(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $productPrice = ProductPrice::factory()->create();
         $otherProduct = Product::factory()->create();
 
@@ -134,7 +132,7 @@ class ProductPriceTest extends TestCase
     #[DataProvider('invalidPayloads')]
     public function test_price_creation_is_validated(array $payload, string $invalidField): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $product = Product::factory()->create();
         $currency = Currency::factory()->create();
 

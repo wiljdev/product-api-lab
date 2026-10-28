@@ -87,8 +87,11 @@ un máximo de 2 decimales y sin valores negativos.
 
 -   Lecturas públicas con rate limiting.
 -   Escrituras protegidas con tokens Bearer de Laravel Sanctum
-    (`auth:sanctum`). **Implementada**. Falta restringirlas a la ability
-    `products:write`. **Propuesta**
+    (`auth:sanctum`) y la ability `products:write`. **Implementada**
+-   Dos roles (`UserRole`): `editor` recibe tokens con `products:write`;
+    `viewer` recibe tokens sin abilities. Sin token la API responde `401`;
+    con un token sin permiso, `403`. Los usuarios nuevos son `viewer` por
+    defecto (mínimo privilegio). **Implementada**
 -   Emisión y revocación de tokens mediante `POST /api/v1/auth/login` y
     `POST /api/v1/auth/logout`; `GET /api/v1/auth/me` devuelve el dueño
     del token. Logout revoca solo el token usado. **Implementada**
@@ -97,9 +100,9 @@ un máximo de 2 decimales y sin valores negativos.
 -   El login responde el mismo error para email desconocido y contraseña
     incorrecta, para no revelar qué emails están registrados.
     **Implementada**
--   El usuario demo se configura con `DEMO_USER_EMAIL` y
-    `DEMO_USER_PASSWORD` (`config/demo.php`); fuera de local se debe usar
-    una contraseña robusta. **Implementada**
+-   Dos usuarios demo configurables en `config/demo.php`: el editor
+    (`DEMO_USER_*`) y el viewer (`DEMO_VIEWER_*`), para probar el `403`.
+    Fuera de local se deben usar contraseñas robustas. **Implementada**
 -   Todas las rutas `/api` responden JSON aunque el cliente no envíe
     `Accept: application/json` (middleware `ForceJsonResponse`).
     **Implementada**
@@ -115,6 +118,6 @@ un máximo de 2 decimales y sin valores negativos.
 | Prefijo `/api/v1`                  | Confirmada |
 | PHPUnit para los tests             | Confirmada |
 | MySQL en desarrollo, SQLite en tests | Confirmada |
-| Sanctum con abilities              | Propuesta  |
+| Sanctum con abilities              | Confirmada |
 | Convención de `exchange_rate`      | Confirmada |
 | Representación de importes         | Confirmada |

@@ -4,12 +4,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Demo User
+    | Demo Users
     |--------------------------------------------------------------------------
     |
-    | Credentials of the user created by the DemoUserSeeder so evaluators can
-    | request an API token. Always set a strong DEMO_USER_PASSWORD outside of
-    | local development.
+    | Credentials of the users created by the DemoUserSeeder so evaluators can
+    | request API tokens. The editor can write products and prices; the viewer
+    | only gets a read-only token, useful to check the 403 responses. Always
+    | set strong passwords outside of local development.
     |
     */
 
@@ -17,6 +18,12 @@ return [
         'name' => env('DEMO_USER_NAME', 'Demo User'),
         'email' => env('DEMO_USER_EMAIL', 'demo@example.com'),
         'password' => env('DEMO_USER_PASSWORD') ?: 'password',
+    ],
+
+    'viewer' => [
+        'name' => env('DEMO_VIEWER_NAME', 'Demo Viewer'),
+        'email' => env('DEMO_VIEWER_EMAIL', 'viewer@example.com'),
+        'password' => env('DEMO_VIEWER_PASSWORD') ?: 'password',
     ],
 
 ];

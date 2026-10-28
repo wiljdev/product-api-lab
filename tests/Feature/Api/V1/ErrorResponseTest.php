@@ -3,9 +3,7 @@
 namespace Tests\Feature\Api\V1;
 
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ErrorResponseTest extends TestCase
@@ -38,7 +36,7 @@ class ErrorResponseTest extends TestCase
 
     public function test_validation_errors_without_accept_header_are_json(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
 
         $response = $this->post(route('api.v1.products.store'), []);
 

@@ -5,9 +5,7 @@ namespace Tests\Feature\Api\V1;
 use App\Models\Currency;
 use App\Models\Product;
 use App\Models\ProductPrice;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -62,7 +60,7 @@ class ProductTest extends TestCase
 
     public function test_authenticated_user_can_create_a_product(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $payload = $this->validPayload();
 
         $response = $this->postJson(route('api.v1.products.store'), $payload);
@@ -88,7 +86,7 @@ class ProductTest extends TestCase
     #[DataProvider('invalidPayloads')]
     public function test_product_creation_is_validated(array $overrides, string $invalidField): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
 
         $response = $this->postJson(route('api.v1.products.store'), [...$this->validPayload(), ...$overrides]);
 
@@ -115,7 +113,7 @@ class ProductTest extends TestCase
 
     public function test_authenticated_user_can_replace_a_product(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $product = Product::factory()->create();
         $payload = $this->validPayload();
 
@@ -127,7 +125,7 @@ class ProductTest extends TestCase
 
     public function test_put_requires_every_field(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $product = Product::factory()->create();
 
         $response = $this->putJson(route('api.v1.products.update', $product), ['name' => 'Only name']);
@@ -138,7 +136,7 @@ class ProductTest extends TestCase
 
     public function test_patch_updates_only_the_given_fields(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $product = Product::factory()->create(['name' => 'Old name', 'price' => 10]);
 
         $response = $this->patchJson(route('api.v1.products.update', $product), ['price' => 12.5]);
@@ -150,7 +148,7 @@ class ProductTest extends TestCase
 
     public function test_patch_still_validates_the_given_fields(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $product = Product::factory()->create();
 
         $this->patchJson(route('api.v1.products.update', $product), ['price' => -5])
@@ -168,7 +166,7 @@ class ProductTest extends TestCase
 
     public function test_authenticated_user_can_delete_a_product_and_its_prices(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        $this->actingAsEditor();
         $productPrice = ProductPrice::factory()->create();
         $product = $productPrice->product;
 

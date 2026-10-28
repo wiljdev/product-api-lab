@@ -15,7 +15,7 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     /**
-     * Issue a Bearer token for valid credentials.
+     * Issue a Bearer token for valid credentials, with the abilities of the user's role.
      *
      * Wrong email and wrong password return the same error so the endpoint
      * cannot be used to discover registered emails.
@@ -34,7 +34,7 @@ class AuthController extends Controller
 
         $token = $user->createToken(
             $request->validated('device_name', 'api'),
-            ['*'],
+            $user->role->abilities(),
             now()->addMinutes(config('sanctum.expiration')),
         );
 
@@ -42,6 +42,7 @@ class AuthController extends Controller
             'data' => [
                 'token' => $token->plainTextToken,
                 'token_type' => 'Bearer',
+                'abilities' => $token->accessToken->abilities,
                 'expires_at' => $token->accessToken->expires_at,
                 'user' => new UserResource($user),
             ],
