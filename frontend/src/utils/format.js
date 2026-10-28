@@ -2,7 +2,9 @@
  * Format an API amount (a decimal string such as "89.90") for display.
  *
  * Amounts stay strings everywhere else; they are converted to numbers only here,
- * to render them with the currency format of the user's language.
+ * to render them with the currency format of the user's language. Two decimals
+ * are always shown, matching what the API stores: otherwise each browser's locale
+ * data decides (for example, recent ICU versions drop the decimals of COP).
  *
  * @param {string|number} amount
  * @param {string} currencyCode ISO 4217 code, e.g. "USD".
@@ -16,7 +18,12 @@ export function formatMoney(amount, currencyCode, locale = 'es') {
   }
 
   try {
-    return new Intl.NumberFormat(locale, { style: 'currency', currency: currencyCode }).format(value)
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)
   } catch {
     return `${value.toFixed(2)} ${currencyCode}`
   }

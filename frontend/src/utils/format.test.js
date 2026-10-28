@@ -10,6 +10,11 @@ describe('formatMoney', () => {
     expect(plain(formatMoney('1250000.00', 'COP'))).toBe('1.250.000,00 COP')
   })
 
+  it('always keeps the two decimals stored by the API', () => {
+    expect(plain(formatMoney('373084.85', 'COP'))).toBe('373.084,85 COP')
+    expect(plain(formatMoney('150', 'JPY'))).toBe('150,00 JPY')
+  })
+
   it('accepts other locales', () => {
     expect(plain(formatMoney('89.90', 'USD', 'en-US'))).toBe('$89.90')
   })

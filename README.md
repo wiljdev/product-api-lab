@@ -1,5 +1,7 @@
 # Product API Lab
 
+[![Tests](https://github.com/wiljdev/product-api-lab/actions/workflows/tests.yml/badge.svg)](https://github.com/wiljdev/product-api-lab/actions/workflows/tests.yml)
+
 API REST en Laravel para gestionar productos, divisas y precios de productos en distintas divisas.
 
 -   CRUD de productos con su divisa base, costo de impuestos y costo de fabricación.
@@ -7,7 +9,8 @@ API REST en Laravel para gestionar productos, divisas y precios de productos en 
 -   Lecturas públicas y escrituras protegidas con tokens Bearer de Laravel Sanctum y roles.
 -   Respuestas JSON consistentes, validación con Form Requests, API Resources y rate limiting.
 -   Documentación OpenAPI con Swagger UI y colección de Postman.
--   Suite de tests automatizados (PHPUnit).
+-   Suite de tests automatizados (PHPUnit) y CI con GitHub Actions.
+-   Frontend Vue 3 independiente con catálogo, detalle de precios y un playground para probar la API.
 
 ## Stack
 
@@ -17,14 +20,15 @@ API REST en Laravel para gestionar productos, divisas y precios de productos en 
 | Laravel | 13 |
 | Base de datos | MySQL 8 (desarrollo) y SQLite en memoria (tests) |
 | Autenticación | Laravel Sanctum 4 |
-| Tests | PHPUnit 12 |
+| Tests | PHPUnit 12 y Vitest |
+| Frontend | Vue 3, Vue Router y Vite |
 
 ## Instalación local
 
 Requisitos: PHP 8.3+ con `pdo_mysql` y `pdo_sqlite`, Composer y MySQL 8. Con [Laragon](https://laragon.org/) ya está todo incluido.
 
 ```bash
-git clone <url-del-repositorio> product-api-lab
+git clone https://github.com/wiljdev/product-api-lab.git
 cd product-api-lab
 composer install
 cp .env.example .env
