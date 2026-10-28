@@ -5,6 +5,22 @@
  * so it disappears when the tab is closed.
  */
 
+/**
+ * HTTP/2 responses carry no reason phrase, so fetch() leaves statusText empty.
+ */
+const STATUS_TEXTS = {
+  200: 'OK',
+  201: 'Created',
+  204: 'No Content',
+  401: 'Unauthorized',
+  403: 'Forbidden',
+  404: 'Not Found',
+  405: 'Method Not Allowed',
+  422: 'Unprocessable Content',
+  429: 'Too Many Requests',
+  500: 'Internal Server Error',
+}
+
 export class ApiError extends Error {
   /**
    * @param {ApiResponse} response
@@ -87,7 +103,7 @@ export function createApiClient({ baseUrl, fetch = globalThis.fetch.bind(globalT
       return {
         ok: response.ok,
         status: response.status,
-        statusText: response.statusText,
+        statusText: response.statusText || STATUS_TEXTS[response.status] || '',
         data: text ? parseJson(text) : null,
         durationMs: Math.round(now() - startedAt),
         url,

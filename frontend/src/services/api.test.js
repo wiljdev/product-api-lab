@@ -98,6 +98,18 @@ describe('createApiClient', () => {
     expect(response).toMatchObject({ ok: true, status: 204, data: null })
   })
 
+  it('fills in the status text that HTTP/2 responses omit', async () => {
+    const { client } = makeClient(
+      new Response('{}', { status: 401, statusText: '' }),
+      new Response('{}', { status: 418, statusText: '' }),
+      new Response('{}', { status: 403, statusText: 'Custom' }),
+    )
+
+    expect((await client.send('GET', 'auth/me')).statusText).toBe('Unauthorized')
+    expect((await client.send('GET', 'auth/me')).statusText).toBe('')
+    expect((await client.send('GET', 'auth/me')).statusText).toBe('Custom')
+  })
+
   it('throws ApiError with validation errors from request helpers', async () => {
     const { client } = makeClient(
       jsonResponse(422, { message: 'The given data was invalid.', errors: { email: ['Invalid credentials.'] } }),
