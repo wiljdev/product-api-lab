@@ -86,7 +86,7 @@ comportamiento por defecto del cast `decimal:2`) o como número.
 | Laravel 13 en la raíz del repo     | Confirmada |
 | Prefijo `/api/v1`                  | Confirmada |
 | PHPUnit para los tests             | Confirmada |
-| MySQL en desarrollo, SQLite en tests | Propuesta |
+| MySQL en desarrollo, SQLite en tests | Confirmada |
 | Sanctum con abilities              | Propuesta  |
 | Convención de `exchange_rate`      | Propuesta  |
 | Representación de importes         | Pendiente  |
