@@ -51,7 +51,10 @@ actualizan a **Implementada** cuando el código y sus tests las respaldan.
 
 -   Importes con `DECIMAL`, nunca `FLOAT`. No se aceptan valores negativos.
 -   Un único precio por producto y divisa: índice único
-    `(product_id, currency_id)`. **Implementada**
+    `(product_id, currency_id)`, validado antes de insertar para responder
+    `422` en vez de un error de base de datos. **Implementada**
+-   No se registra un precio en la divisa base del producto: ese precio
+    es el campo `price` del propio producto. **Implementada**
 -   Al eliminar un producto se eliminan sus precios (`cascadeOnDelete`).
     **Implementada**
 -   No se puede eliminar una divisa usada como base de un producto o en
