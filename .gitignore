@@ -27,7 +27,10 @@ Homestead.yaml
 Thumbs.db
 
 # AI tooling (local only)
+/.agents/
 /.claude/
+/.mcp.json
 /AGENTS.md
+/boost.json
 /CLAUDE.md
 /CLAUDE.local.md
