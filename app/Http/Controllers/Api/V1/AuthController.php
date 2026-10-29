@@ -10,23 +10,40 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Timebox;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     /**
+     * Minimum duration of a failed login, longer than a bcrypt check.
+     */
+    private const FAILED_LOGIN_MICROSECONDS = 400_000;
+
+    /**
      * Issue a Bearer token for valid credentials, with the abilities of the user's role.
      *
-     * Wrong email and wrong password return the same error so the endpoint
-     * cannot be used to discover registered emails.
+     * Wrong email and wrong password return the same error and, thanks to the
+     * timebox, take the same time, so the endpoint cannot be used to discover
+     * registered emails.
      *
      * @throws ValidationException
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::firstWhere('email', $request->validated('email'));
+        $user = (new Timebox)->call(function (Timebox $timebox) use ($request): ?User {
+            $user = User::firstWhere('email', $request->validated('email'));
 
-        if (! $user || ! Hash::check($request->validated('password'), $user->password)) {
+            if ($user && Hash::check($request->validated('password'), $user->password)) {
+                $timebox->returnEarly();
+
+                return $user;
+            }
+
+            return null;
+        }, self::FAILED_LOGIN_MICROSECONDS);
+
+        if (! $user) {
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);

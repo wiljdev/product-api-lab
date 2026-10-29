@@ -22,14 +22,14 @@ class DemoUserSeeder extends Seeder
      */
     private function seedUser(array $credentials, UserRole $role): void
     {
-        User::updateOrCreate(
+        $user = User::updateOrCreate(
             ['email' => $credentials['email']],
-            [
-                'name' => $credentials['name'],
-                'password' => $credentials['password'],
-                'role' => $role,
-                'email_verified_at' => now(),
-            ],
+            ['name' => $credentials['name'], 'password' => $credentials['password']],
         );
+
+        $user->forceFill([
+            'role' => $role,
+            'email_verified_at' => $user->email_verified_at ?? now(),
+        ])->save();
     }
 }

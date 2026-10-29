@@ -3,7 +3,9 @@
 namespace Tests\Feature\Api\V1;
 
 use App\Models\User;
+use Carbon\CarbonInterval;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Sleep;
 use Laravel\Sanctum\PersonalAccessToken;
 use Tests\TestCase;
 
@@ -93,6 +95,30 @@ class AuthTest extends TestCase
         $unknownEmail->assertUnprocessable()->assertJsonValidationErrors('email');
         $this->assertSame($wrongPassword->json('errors'), $unknownEmail->json('errors'));
         $this->assertDatabaseEmpty('personal_access_tokens');
+    }
+
+    public function test_failed_logins_wait_for_the_timebox_whether_or_not_the_email_exists(): void
+    {
+        User::factory()->create(['email' => 'evaluator@example.com']);
+        $padded = fn (CarbonInterval $duration) => $duration->totalMicroseconds > 0
+            && $duration->totalMicroseconds <= 400_000;
+
+        $this->postJson(route('api.v1.auth.login'), ['email' => 'nobody@example.com', 'password' => 'password']);
+        $this->postJson(route('api.v1.auth.login'), ['email' => 'evaluator@example.com', 'password' => 'wrong-password']);
+
+        Sleep::assertSlept($padded, 2);
+    }
+
+    public function test_successful_login_is_not_delayed(): void
+    {
+        User::factory()->create(['email' => 'evaluator@example.com']);
+
+        $this->postJson(route('api.v1.auth.login'), [
+            'email' => 'evaluator@example.com',
+            'password' => 'password',
+        ])->assertOk();
+
+        Sleep::assertNeverSlept();
     }
 
     public function test_login_requires_email_and_password(): void
