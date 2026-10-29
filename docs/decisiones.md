@@ -121,8 +121,11 @@ un máximo de 2 decimales y sin valores negativos.
 -   Los tokens caducan a los `SANCTUM_EXPIRATION` minutos (24 horas por
     defecto). **Implementada**
 -   El login responde el mismo error para email desconocido y contraseña
-    incorrecta, para no revelar qué emails están registrados.
-    **Implementada**
+    incorrecta, y los intentos fallidos duran siempre lo mismo (`Timebox` de
+    400 ms), para no revelar qué emails están registrados ni por el mensaje ni
+    por el tiempo de respuesta. **Implementada**
+-   El rol del usuario no es asignable de forma masiva; solo se cambia de
+    forma explícita (`forceFill`). **Implementada**
 -   Dos usuarios demo configurables en `config/demo.php`: el editor
     (`DEMO_USER_*`) y el viewer (`DEMO_VIEWER_*`), para probar el `403`.
     Fuera de local se deben usar contraseñas robustas. **Implementada**

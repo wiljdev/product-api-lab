@@ -125,6 +125,12 @@ php artisan optimize
 
 `optimize` cachea configuración, rutas, eventos y vistas. Después de cambiar el `.env` hay que volver a ejecutarlo.
 
+Los tokens caducados no se borran solos. En el sitio, **Cron Jobs**, añade una tarea diaria (por ejemplo a las 03:00):
+
+```bash
+php /home/ingeniapp-api-productos/htdocs/api-productos.ingeniapp.cloud/artisan sanctum:prune-expired --hours=24
+```
+
 Comprueba la API:
 
 ```bash
@@ -212,8 +218,10 @@ php artisan migrate:fresh --seed --force
 ## Lista de seguridad
 
 -   `APP_DEBUG=false` y `APP_ENV=production`.
--   HTTPS en los dos subdominios.
+-   HTTPS en los dos subdominios, con HSTS: en el **Vhost** de cada sitio, junto a las demás directivas, añade
+    `add_header Strict-Transport-Security "max-age=31536000" always;`.
 -   `.env` fuera del repositorio (está en `.gitignore`) y con contraseñas propias de producción.
 -   Usuario de base de datos exclusivo de la aplicación; MySQL no expuesto a Internet.
 -   `CORS_ALLOWED_ORIGINS` limitado al dominio del frontend.
--   Contraseñas demo robustas; los tokens caducan a las 24 horas y la API limita las peticiones.
+-   Contraseñas demo robustas, que se cambian al terminar la evaluación; los tokens caducan a las 24 horas y la API limita las peticiones.
+-   Acceso SSH solo con clave y panel de CloudPanel restringido por IP si es posible.

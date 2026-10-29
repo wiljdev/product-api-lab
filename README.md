@@ -185,6 +185,23 @@ El detalle está en [`docs/decisiones.md`](docs/decisiones.md). En resumen:
 -   **Autorización:** el rol del usuario define las abilities del token; los usuarios nuevos son `viewer` por defecto.
 -   **Versionado:** rutas bajo `/api/v1` para poder evolucionar la API sin romper clientes.
 
+## Seguridad
+
+| Riesgo | Medida |
+| --- | --- |
+| Escrituras sin autorización | Tokens Bearer de Sanctum con la ability `products:write`, que solo recibe el rol `editor`. Sin token se responde `401`; con un token sin permiso, `403`. |
+| Robo o reutilización de tokens | Los tokens se guardan hasheados, caducan a las 24 horas y el logout revoca el token usado. El frontend los guarda solo en memoria, nunca en `localStorage`. |
+| Fuerza bruta en el login | Límite de 5 intentos por minuto por email e IP, y de 20 por IP. |
+| Descubrir qué emails existen | El login responde el mismo error y tarda lo mismo (`Timebox`) con un email inexistente que con una contraseña incorrecta. |
+| Escalada de privilegios | El rol no es asignable de forma masiva: no se puede cambiar enviando `role` en una petición. |
+| Abuso de la API | Rate limiting de 60 peticiones por minuto por usuario o IP. |
+| Peticiones desde otras webs | CORS limitado a los orígenes del frontend, sin credenciales. |
+| Fugas de información | Errores en JSON sin trazas en producción; los `404` no exponen clases internas. |
+| Inyección SQL y XSS | Consultas con Eloquent y parámetros enlazados; Vue escapa el texto y el visor JSON escapa el HTML antes de resaltarlo. |
+| Datos inválidos | Validación de cada campo con Form Requests: importes no negativos con 2 decimales, divisas existentes y un precio por divisa. |
+
+Las dependencias no tienen vulnerabilidades conocidas (`composer audit` y `npm audit`). Las medidas del servidor (HTTPS, cabeceras y base de datos no expuesta) están en [`docs/deploy.md`](docs/deploy.md).
+
 ## Estructura
 
 ```text
